@@ -1,0 +1,10 @@
+description = "security-jwt"
+
+bootJar {
+    enabled = false
+}
+
+dependencies {
+    api(project(":common-api"))
+}
+

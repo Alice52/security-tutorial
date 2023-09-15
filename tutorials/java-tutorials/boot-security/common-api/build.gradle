@@ -1,0 +1,24 @@
+description = 'common-api'
+
+bootJar {
+    enabled = false
+}
+
+dependencies {
+    // jackson
+    implementation 'com.fasterxml.jackson.module:jackson-module-parameter-names'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+    // tools
+    implementation "com.github.ulisesbocchio:jasypt-spring-boot-starter:$jasypt_version"
+
+    // spring
+    api('org.springframework.boot:spring-boot-starter-web') {
+        exclude module: 'spring-boot-starter-tomcat'
+    }
+    api 'org.springframework.boot:spring-boot-starter-undertow'
+    api 'org.springframework.boot:spring-boot-starter-actuator'
+    api 'org.springframework.boot:spring-boot-starter-validation'
+    api 'jakarta.validation:jakarta.validation-api'
+}

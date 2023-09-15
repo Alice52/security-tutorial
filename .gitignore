@@ -1,4 +1,5 @@
 !**/.gitignore
+!**/gradle/wrapper/gradle-wrapper.jar
 
 # Binaries for programs and plugins
 *.exe
@@ -268,3 +269,4 @@ Module.symvers
 Mkfile.old
 dkms.conf
 **/.DS_Store
+!gradle/wrapper/gradle-wrapper.jar

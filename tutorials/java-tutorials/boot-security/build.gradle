@@ -1,0 +1,92 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+// 插件定义(需结合 apply 使用)
+plugins {
+    id 'idea'
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version "$kotlin_version"
+    id 'org.jetbrains.kotlin.plugin.spring' version "$kotlin_version"
+    id("org.springframework.boot") version "$boot_version"
+    id("io.spring.dependency-management") version "$spring_management_version"
+}
+
+
+// 指定gradle版本
+wrapper {
+    gradleVersion = '7.6' // version required
+}
+
+allprojects {
+    // this is must
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'org.jetbrains.kotlin.jvm'
+    apply plugin: 'org.jetbrains.kotlin.plugin.spring'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    // 项目信息
+    group this.p_group
+    version this.p_version
+
+    // 指定jdk兼容的最低版本
+    sourceCompatibility = this.jdk_version
+    targetCompatibility = this.jdk_version
+
+    // 全局配置: 编码格式
+    [compileJava, compileTestJava, javadoc].forEach {
+        it.options.encoding = 'UTF-8'
+    }
+    // 全局配置: java 编译参数
+    compileJava {
+        options.compilerArgs = ['-Amapstruct.suppressGeneratorTimestamp=true',
+                                '-Amapstruct.suppressGeneratorVersionInfoComment=true',
+                                '-parameters']
+    }
+    // 全局配置: kt 编译参数 + 默认只能是UTF8编码
+    compileKotlin {
+        kotlinOptions {
+            freeCompilerArgs += "-Xjsr305=strict"
+            jvmTarget = this.jdk_version
+        }
+    }
+
+    repositories {
+        maven { url = uri("https://maven.aliyun.com/nexus/content/groups/public/") }
+        maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
+        mavenCentral()
+    }
+}
+
+subprojects {
+    dependencies {
+        implementation "javax.annotation:javax.annotation-api:$javax_version"
+        compileOnly "org.projectlombok:lombok:$lombok_version"
+        implementation "org.slf4j:slf4j-api:$slf4j_version"
+        implementation "ch.qos.logback:logback-classic:$logback_version"
+        implementation "ch.qos.logback:logback-core:$logback_version"
+        implementation "net.logstash.logback:logstash-logback-encoder:$logstash_version"
+        implementation "cn.hutool:hutool-all:$hutool_version"
+        implementation "com.google.guava:guava:$guava_version"
+
+        annotationProcessor "org.projectlombok:lombok:$lombok_version"
+        annotationProcessor "org.mapstruct:mapstruct-processor:$mapstruct_version"
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+bootJar {
+    enabled = false
+}

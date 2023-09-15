@@ -1,0 +1,6 @@
+rootProject.name = "boot-security"
+
+include 'security-https'
+include 'common-api'
+include 'security-jwt'
+

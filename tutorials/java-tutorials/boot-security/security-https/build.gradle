@@ -1,0 +1,5 @@
+description = "security-https"
+
+dependencies {
+    api(project(":common-api"))
+}
