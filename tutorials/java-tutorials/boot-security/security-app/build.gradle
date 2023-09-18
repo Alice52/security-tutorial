@@ -1,4 +1,4 @@
-description = "security-jwt"
+description = 'security-app'
 
 dependencies {
     api(project(":common-api"))
