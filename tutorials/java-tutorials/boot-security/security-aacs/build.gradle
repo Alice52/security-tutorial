@@ -1,0 +1,5 @@
+description = 'security-aacs'
+
+bootJar {
+    enabled = false
+}

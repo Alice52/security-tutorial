@@ -2,4 +2,5 @@ description = "security-https"
 
 dependencies {
     api(project(":common-api"))
+    api 'io.github.alice52:swagger-2:0.0.4'
 }

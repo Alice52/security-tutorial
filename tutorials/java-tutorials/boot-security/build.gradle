@@ -63,6 +63,9 @@ allprojects {
     repositories {
         maven { url = uri("https://maven.aliyun.com/nexus/content/groups/public/") }
         maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
+        maven {
+            url "https://s01.oss.sonatype.org/content/groups/public/"
+        }
         mavenCentral()
     }
 }

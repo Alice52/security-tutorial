@@ -4,4 +4,5 @@ include 'security-https'
 include 'common-api'
 include 'security-jwt'
 include 'security-app'
+include 'security-aacs'
 
