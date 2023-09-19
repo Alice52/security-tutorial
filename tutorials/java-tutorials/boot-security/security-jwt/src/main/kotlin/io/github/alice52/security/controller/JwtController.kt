@@ -1,6 +1,6 @@
 package io.github.alice52.security.controller
 
-import io.github.alice52.security.utils.RsaJwtUtil
+import io.github.alice52.security.util.RsaJwtUtil
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController

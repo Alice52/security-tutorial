@@ -1,7 +1,7 @@
 package io.github.alice52.security.raw
 
-import io.github.alice52.security.utils.RsaCertGenerateUtil
-import io.github.alice52.security.utils.RsaUtil
+import io.github.alice52.security.util.RsaCertGenerateUtil
+import io.github.alice52.security.util.RsaUtil
 import org.junit.Test
 
 

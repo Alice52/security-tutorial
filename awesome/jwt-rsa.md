@@ -6,32 +6,84 @@
    - 私钥转换为 PrivateKey 对 Jwt 进行签名(签名值可以被看作是对原始数据的摘要)
    - 公钥转换为 PublicKey 对 Jwt 进行签名验证(未修改): 数学逻辑保证可以使用公钥验证私钥的签名
 
-2. 构建公钥的 PublicKey: `通过公钥的 /jks 暴露公钥` || `直接将公钥文件下发`
+     ```shell
+     # 上面生成的是二进制文件, 得到可以在 jwt.io/debugger 内可以验证签名的密钥和公钥
+     openssl rsa -inform der -pubin -in .\rsa.pub -outform pem -out .\rsa.pub.pem
 
-   ```kotlin
-   // 直接将公钥文件下发
-   fun getPublicKey(filename: String = rsaPub): PublicKey {
-       val bytes = FileUtil.readFile(filename)
-       return getPublicKey(bytes)
-   }
+     # 生成之后修改为 -----BEGIN RSA PRIVATE KEY-----, 之后可以https://irrte.ch/jwt-js-decode/pem2jwk.html得到jwk
+     openssl rsa -inform der -in .\rsa.pri -outform pem -out .\rsa.pri.pem
+     ```
 
-   // 通过公钥的 /jks 暴露公钥
-   fun buildPublicByJks(publicKeyEncode: String, alg: String, format: String = "X.509"): PublicKey {
+2. 构建公钥的 PublicKey: `公钥的Encoded` || `通过 jwk 暴露` || `直接将公钥文件下发`
 
-       if (format == "X.509") {
-           val decodedBytes: ByteArray = Base64.getDecoder().decode(publicKeyEncode)
-           return getPublicKey(decodedBytes)
-       } else {
-           TODO("NotImplement")
-       }
-   }
+   - jwk 与 RSAPublicKey 转换
 
-   private fun getPublicKey(bytes: ByteArray?): PublicKey {
-       val spec = X509EncodedKeySpec(bytes)
-       val factory: KeyFactory = KeyFactory.getInstance(RSA)
-       return factory.generatePublic(spec)
-   }
-   ```
+     ```kotlin
+     fun buildByJwk(jwk: Jwk): PublicKey {
+        val modulus = BigInteger(1, Base64.getUrlDecoder().decode(jwk.n))
+        val exponent = BigInteger(1, Base64.getUrlDecoder().decode(jwk.e))
+        // 构建RSAPublicKeySpec对象
+        val keyFactory = KeyFactory.getInstance(RSA)
+        val publicKey = keyFactory.generatePublic(RSAPublicKeySpec(modulus, exponent))
+        // 确认PublicKey是RSAPublicKey类型
+        return if (publicKey is RSAPublicKey) {
+           publicKey
+        } else {
+           throw IllegalArgumentException("JWK JSON does not represent an RSA public key")
+        }
+     }
+
+     fun parse2Jwk(pk: RSAPublicKey): Jwk {
+        // 获取公钥的模数和指数
+        val modulus: BigInteger = pk.getModulus()
+        val exponent: BigInteger = pk.getPublicExponent()
+
+        // 将模数和指数转换为Base64URL字符串
+        val encodedModulus: String = base64UrlEncode(modulus.toByteArray())
+        val encodedExponent: String = base64UrlEncode(exponent.toByteArray())
+
+        // 构建JWK对象
+        return Jwk(
+           kty = "RSA", e = encodedExponent, n = encodedModulus
+        )
+     }
+
+     private fun base64UrlEncode(bytes: ByteArray): String {
+        val base64: String = Base64.getUrlEncoder().encodeToString(bytes)
+        // 移除末尾的等号，并替换字符“+”和“/”为字符“-”和“_”
+        return base64.replace("=+$".toRegex(), "").replace('+', '-').replace('/', '_')
+     }
+     ```
+
+   - 直接将公钥文件下发
+
+     ```kotlin
+     // 直接将公钥文件下发
+     fun getPublicKey(filename: String = rsaPub): PublicKey {
+         val bytes = FileUtil.readFile(filename)
+         return getPublicKey(bytes)
+     }
+     ```
+
+   - 公钥的 Encoded
+
+     ```kotlin
+     // 通过公钥Encoded
+     fun buildPublicByJks(publicKeyEncode: String, alg: String, format: String = "X.509"): PublicKey {
+         if (format == "X.509") {
+             val decodedBytes: ByteArray = Base64.getDecoder().decode(publicKeyEncode)
+             return getPublicKey(decodedBytes)
+         } else {
+             TODO("NotImplement")
+         }
+     }
+
+     private fun getPublicKey(bytes: ByteArray?): PublicKey {
+         val spec = X509EncodedKeySpec(bytes)
+         val factory: KeyFactory = KeyFactory.getInstance(RSA)
+         return factory.generatePublic(spec)
+     }
+     ```
 
 3. jwt 生成
 

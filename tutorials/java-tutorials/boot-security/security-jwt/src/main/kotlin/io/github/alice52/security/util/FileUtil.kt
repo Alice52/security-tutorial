@@ -1,4 +1,4 @@
-package io.github.alice52.security.utils
+package io.github.alice52.security.util
 
 import org.springframework.core.io.ClassPathResource
 import org.springframework.util.FileCopyUtils.copyToByteArray

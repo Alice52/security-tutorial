@@ -1,9 +1,11 @@
-package io.github.alice52.security.utils
+package io.github.alice52.security.util
 
 import io.github.alice52.logger
+import io.github.alice52.security.model.Jwk
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import java.util.*
+
 
 object RsaJwtUtil {
 
@@ -17,12 +19,16 @@ object RsaJwtUtil {
         return builder.compact()
     }
 
-    @Deprecated(message = "在各自应用内使用jwt的自检验特性")
-    fun parseByDeprecated(token: String): Boolean {
+    fun parseByPublicEncode(token: String): Boolean {
         val jws = Jwts.parserBuilder().setSigningKey(RsaUtil.getPublicKey()).build().parseClaimsJws(token)
-
         logger().info("jwt: {}", jws)
+        return true
+    }
 
+    fun parseByJwk(token: String, jwk: Jwk): Boolean {
+
+        val jws = Jwts.parserBuilder().setSigningKey(RsaUtil.buildByJwk(jwk)).build().parseClaimsJws(token)
+        logger().info("jwt: {}", jws)
         return true
     }
 
