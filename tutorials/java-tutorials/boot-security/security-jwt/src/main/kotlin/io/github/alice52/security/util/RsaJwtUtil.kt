@@ -19,6 +19,15 @@ object RsaJwtUtil {
         return builder.compact()
     }
 
+    @Deprecated(message = "在各自应用内使用jwt的自检验特性")
+    fun parseByDeprecated(token: String): Boolean {
+        val jws = Jwts.parserBuilder().setSigningKey(RsaUtil.getPublicKey()).build().parseClaimsJws(token)
+
+        logger().info("jwt: {}", jws)
+
+        return true
+    }
+
     fun parseByPublicEncode(token: String): Boolean {
         val jws = Jwts.parserBuilder().setSigningKey(RsaUtil.getPublicKey()).build().parseClaimsJws(token)
         logger().info("jwt: {}", jws)
