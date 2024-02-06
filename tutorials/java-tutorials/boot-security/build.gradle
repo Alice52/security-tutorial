@@ -22,7 +22,7 @@ plugins {
 
 // 指定gradle版本
 wrapper {
-    gradleVersion = '7.6' // version required
+    gradleVersion = '7.6.4' // version required
 }
 
 allprojects {
