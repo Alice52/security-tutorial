@@ -52,7 +52,7 @@
 
    - 用于在客户端和资源所有者之间进行安全的授权流程
 
-6. 授权模式-authorization_code: 授权码模式
+6. 授权模式-authorization_code: 授权码模式(**这里面的用户登录是严格要求的且不能省略-会直接重定向相关页面[不能直接给了 authenticated_userid 就模拟这个人登录-不太安全]**)
 
    - 客户端将用户重定向到授权服务器, 并请求授权(为了获取授权码): `:8443/demo/oauth2/authorize`
    - **用户登录**并授权客户端访问其受保护的资源
@@ -202,25 +202,25 @@
 
 9. 授权模式-password_grant: 密码模式
 
-- 用户将其用户名和密码直接提供给客户端
-- 客户端使用用户提供的凭据直接向授权服务器请求访问令牌
-- 授权服务器验证用户凭据, 并根据验证结果颁发访问令牌给客户端
-- 此模式通常用于**受信任**的应用程序, 如原生移动应用或受信任的**第一方**应用
+   - 用户将其用户名和密码直接提供给客户端
+   - 客户端使用用户提供的凭据直接向授权服务器请求访问令牌
+   - 授权服务器验证用户凭据, 并根据验证结果颁发访问令牌给客户端
+   - 此模式通常用于**受信任**的应用程序, 如原生移动应用或受信任的**第一方**应用
 
-- kong sample: 不需要第一步获取 code, 可以直接获取到 access_token
+   - kong sample: 不需要第一步获取 code, 可以直接获取到 access_token
 
-  ```shell
-  # _用户需要在Kong的前面添加用户身份认证并且提供authenticated_userid给Kong来颁发通行码和刷新码给用户_
-  curl -X POST \
-     --url "https://localhost:8443/demo/oauth2/token" \
-     --data "grant_type=password" \
-     --data "scope=email address" \
-     --data "client_id=oauth2-demo-client-id" \
-     --data "client_secret=oauth2-demo-client-secret" \
-     --data "provision_key=oauth2-demo-provision-key" \
-     --data "authenticated_userid=xxx" \
-     --insecure
-  ```
+     ```shell
+     # _用户需要在Kong的前面添加用户身份认证并且提供authenticated_userid给Kong来颁发通行码和刷新码给用户_
+     curl -X POST \
+        --url "https://localhost:8443/demo/oauth2/token" \
+        --data "grant_type=password" \
+        --data "scope=email address" \
+        --data "client_id=oauth2-demo-client-id" \
+        --data "client_secret=oauth2-demo-client-secret" \
+        --data "provision_key=oauth2-demo-provision-key" \
+        --data "authenticated_userid=xxx" \
+        --insecure
+     ```
 
 ---
 
